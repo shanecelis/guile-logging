@@ -47,7 +47,9 @@ if (log4c_category_is_priority_enabled(a_category, a_priority)) {
 Let's try to do as little as possible in C.
 <<file:scm-logging.c>>=
 #include <libguile.h>
+#ifndef SCM_MAGIC_SNARFER 
 #include "logging.h"
+#endif
 
 SCM_DEFINE (scm_mylog_primitive, "mylog-primitive", 3, 0, 0,
             (SCM cat_name, SCM pri, SCM string),
@@ -68,25 +70,28 @@ SCM_DEFINE (scm_log4c_reread, "log4c-reread", 0, 0, 0,
 }
 
 
-void init_logging_module(void *data)
-{
-  scm_c_define_gsubr("mylog-primitive", 
-                     3, 0, 0, 
-                     scm_mylog_primitive); 
-  scm_c_define_gsubr("log4c-reread", 
-                     3, 0, 0, 
-                     scm_log4c_reread); 
-  scm_c_export("mylog-primitive", "log4c-reread", NULL);
-}
+/* void init_logging_module(void *data) */
+/* { */
+/*   scm_c_define_gsubr("mylog-primitive",  */
+/*                      3, 0, 0,  */
+/*                      scm_mylog_primitive);  */
+/*   scm_c_define_gsubr("log4c-reread",  */
+/*                      3, 0, 0,  */
+/*                      scm_log4c_reread);  */
+/*   scm_c_export("mylog-primitive", "log4c-reread", NULL); */
+/* } */
 
 void init_logging()
 {
-  SCM module = scm_current_module();
-  scm_c_define_module("logging-primitive", init_logging_module, NULL);
-  scm_set_current_module(module);
+#ifndef SCM_MAGIC_SNARFER 
+#include "scm-logging.c.x" 
+#endif
+
+  /* SCM module = scm_current_module(); */
+  /* scm_c_define_module("logging-primitive", init_logging_module, NULL); */
+  /* scm_set_current_module(module); */
   //init_logging_module(NULL);
 }
-
 @
 
 <<file:scm-logging.h>>=
@@ -104,8 +109,9 @@ It'd be better if we didn't encode any numbers that are defined in C
 headers here but I'm skipping that for expediency's sake.
 
 <<file:logging.scm>>=
-(define-module (logging)
-  #:use-module (logging-primitive))
+(define-module (logging))
+
+(load-extension "libguile-logging" "init_logging")
 
 (define-public pri-fatal 000)
 (define-public pri-alert 100)

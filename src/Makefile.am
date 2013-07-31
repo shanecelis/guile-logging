@@ -4,8 +4,8 @@ include $(top_srcdir)/support/automake/guile.am
 .SECONDARY:
 
 NOWEAVE_FLAGS = -n -delay
-BUILT_SOURCES = $(NOWEB_BUILT_FILES) logging.c.x 
-CLEANFILES = $(NOWEB_CLEANFILES) logging.c.x 
+BUILT_SOURCES = $(NOWEB_BUILT_FILES) scm-logging.c.x 
+CLEANFILES = $(NOWEB_CLEANFILES) scm-logging.c.x 
 
 WARN_NOTANGLE = $(top_builddir)/bin/warn-notangle
 
@@ -19,11 +19,10 @@ NOWEB_FILES = logging.nw
 NOWEB_PRODUCTS = logging.c logging.h scm-logging.c scm-logging.h logging.scm
 EXTRA_DIST = $(NOWEB_DOCS) $(NOWEB_EXTRA_DIST)
 
-logging.o : logging.c.x
+scm-logging.o : scm-logging.c.x
 
 scm-logging.h scm-logging.c : logging.nw $(NOWEB_INCLUDES)
 	$(AM_V_GEN)	$(warn_notangle) -o $@ $(WARN_NOTANGLE_LISP_FLAGS) -- $(NOTANGLE_LISP_FLAGS) -R"file:$@" $^
-
 
 check_PROGRAMS = 
 
