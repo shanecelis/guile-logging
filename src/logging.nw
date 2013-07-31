@@ -1,0 +1,128 @@
+% -*- mode: Noweb; noweb-code-mode: c-mode -*-
+\section{Logging}
+
+We would like to introduce logging for both the C and Scheme code.
+ERACS will use the [[log4c]] library.  
+
+<<file:logging.h>>=
+<<+ Begin C Header Guard.>>
+#include <log4c.h> 
+#define PRI_FATAL  LOG4C_PRIORITY_FATAL
+#define PRI_ALERT  LOG4C_PRIORITY_ALERT
+#define PRI_CRIT   LOG4C_PRIORITY_CRIT
+#define PRI_ERROR  LOG4C_PRIORITY_ERROR
+#define PRI_WARN   LOG4C_PRIORITY_WARN
+#define PRI_NOTICE LOG4C_PRIORITY_NOTICE
+#define PRI_INFO   LOG4C_PRIORITY_INFO
+#define PRI_DEBUG  LOG4C_PRIORITY_DEBUG
+#define PRI_TRACE  LOG4C_PRIORITY_TRACE
+void mylog(const char *cat_name, int priority, const char* format, ...);
+<<+ End C Header Guard.>>
+@
+
+<<file:logging.c>>=
+#include "logging.h"
+#include "stdarg.h"
+void mylog(const char *cat_name, int a_priority,
+  const char* a_format,...){
+#ifdef WITH_LOG4C
+  const log4c_category_t* a_category = log4c_category_get(cat_name);
+if (log4c_category_is_priority_enabled(a_category, a_priority)) {
+	va_list va;
+	va_start(va, a_format);
+	log4c_category_vlog(a_category, a_priority, a_format, va);
+	va_end(va);
+}
+#else
+  va_list va;
+	va_start(va, a_format);
+	vprintf(a_format, va);
+	va_end(va);
+#endif                                  
+}
+@ 
+
+\subsection{Logging in Scheme}
+
+Let's try to do as little as possible in C.
+<<file:scm-logging.c>>=
+#include <libguile.h>
+#include "logging.h"
+
+SCM_DEFINE (scm_mylog_primitive, "mylog-primitive", 3, 0, 0,
+            (SCM cat_name, SCM pri, SCM string),
+            "Log a message primtive.")
+{
+  mylog(scm_to_locale_string(cat_name), 
+        scm_to_int(pri), 
+        scm_to_locale_string(string));
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE (scm_log4c_reread, "log4c-reread", 0, 0, 0,
+            (),
+            "Reload log configuration file.")
+{
+  log4c_reread();
+  return SCM_UNSPECIFIED;
+}
+
+
+void init_logging_module(void *data)
+{
+  scm_c_define_gsubr("mylog-primitive", 
+                     3, 0, 0, 
+                     scm_mylog_primitive); 
+  scm_c_define_gsubr("log4c-reread", 
+                     3, 0, 0, 
+                     scm_log4c_reread); 
+  scm_c_export("mylog-primitive", "log4c-reread", NULL);
+}
+
+void init_logging()
+{
+  SCM module = scm_current_module();
+  scm_c_define_module("logging-primitive", init_logging_module, NULL);
+  scm_set_current_module(module);
+  //init_logging_module(NULL);
+}
+
+@
+
+<<file:scm-logging.h>>=
+<<+ Begin C Header Guard.>>
+void init_logging(void);
+<<+ End C Header Guard.>>
+@ 
+
+<<+ Initialize submodules.>>=
+init_logging();
+@
+
+
+It'd be better if we didn't encode any numbers that are defined in C
+headers here but I'm skipping that for expediency's sake.
+
+<<file:logging.scm>>=
+(define-module (logging)
+  #:use-module (logging-primitive))
+
+(define-public pri-fatal 000)
+(define-public pri-alert 100)
+(define-public pri-crit  200)
+(define-public pri-error 300)
+(define-public pri-warn  400)
+(define-public pri-notice 500)
+(define-public pri-info 600)
+(define-public pri-debug 700)
+(define-public pri-trace 800)
+(define-public pri-notset 900)
+(define-public pri-unknown 1000)
+
+(define-public (mylog category-name priority message-format . args)
+  (mylog-primitive category-name priority (apply format #f message-format args)))
+@
+
+<<+ Load scheme files.>>=
+  emacsy_load_module("logging");
+@

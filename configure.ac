@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([guile-noweb-autotools], [0.1.0], [you@somewhere.com])
+AC_INIT([guile-log4c], [0.1.0], [shane.celis@gmail.com])
 AC_CONFIG_AUX_DIR([support/build-aux])
 
 # We're going to use GNUMake and we're going to like it.
@@ -16,6 +16,8 @@ AC_PROG_LIBTOOL
 AX_CHECK_NOWEB
 AC_PATH_PROG([PERL], [perl])
 AC_SUBST([PERL])
+
+AM_PATH_LOG4C([1.2.0])
 
 AC_PATH_PROG([BASH], [bash])
 AC_SUBST([BASH])
@@ -37,6 +39,7 @@ AC_CHECK_FUNCS([puts])
 
 AC_SUBST(ENV, ['${top_builddir}/bin/env'])
 AC_SUBST(imagedir, ['${top_srcdir}/support/image'])
+AC_SUBST(nowebdir, ['${top_srcdir}/support/noweb'])
 AC_SUBST(automakedir, ['${top_srcdir}/support/automake'])
 pdflatex="TEXINPUTS=${imagesdir}: $pdflatex";
 
@@ -47,7 +50,7 @@ AC_CONFIG_FILES([ Makefile
                   src/Makefile 
                   tests/Makefile
                   support/pkg-config/Makefile
-                  support/pkg-config/guile-noweb-autotools.pc
+                  support/pkg-config/guile-log4c.pc
                   ], [])
 AC_CONFIG_FILES([ tests/works-without-noweb.sh ], [chmod +x tests/works-without-noweb.sh])
 AC_CONFIG_FILES([bin/env], [chmod a+x bin/env])

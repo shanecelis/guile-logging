@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: guile-log4c
+Description: A guile wrapper for the log4c library
+URL: <homepage>
+Version: @VERSION@
+Requires: guile-2.0
+Libs: -L${libdir} -lguile-logging @LOG4C_LIBS@
+Cflags: -I${includedir} @LOG4C_CFLAGS@
