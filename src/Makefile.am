@@ -34,7 +34,7 @@ SCM_LOG_COMPILER = $(ENV) guile
 lib_LTLIBRARIES = libguile-logging.la
 
 guilemoduledir = $(prefix)/share/guile/site/
-dist_guilemodule_DATA = 
+dist_guilemodule_DATA = logging.scm
 
 AM_CFLAGS  = $(GUILE_CFLAGS)
 # hello_world_test_c_LDADD   = $(GUILE_LIBS) libguile-logging.la
