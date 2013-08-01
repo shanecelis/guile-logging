@@ -6,6 +6,7 @@ ERACS will use the [[log4c]] library.
 
 <<file:logging.h>>=
 <<+ Begin C Header Guard.>>
+#ifdef HAVE_LOG4C
 #include <log4c.h> 
 #define PRI_FATAL  LOG4C_PRIORITY_FATAL
 #define PRI_ALERT  LOG4C_PRIORITY_ALERT
@@ -16,16 +17,28 @@ ERACS will use the [[log4c]] library.
 #define PRI_INFO   LOG4C_PRIORITY_INFO
 #define PRI_DEBUG  LOG4C_PRIORITY_DEBUG
 #define PRI_TRACE  LOG4C_PRIORITY_TRACE
+#else
+#define PRI_FATAL  1
+#define PRI_ALERT  2
+#define PRI_CRIT   3
+#define PRI_ERROR  4
+#define PRI_WARN   5
+#define PRI_NOTICE 6
+#define PRI_INFO   7
+#define PRI_DEBUG  8
+#define PRI_TRACE  9
+#endif
 void mylog(const char *cat_name, int priority, const char* format, ...);
 <<+ End C Header Guard.>>
 @
 
 <<file:logging.c>>=
+#include "config.h"
 #include "logging.h"
 #include "stdarg.h"
 void mylog(const char *cat_name, int a_priority,
   const char* a_format,...){
-#ifdef WITH_LOG4C
+#ifdef HAVE_LOG4C
   const log4c_category_t* a_category = log4c_category_get(cat_name);
 if (log4c_category_is_priority_enabled(a_category, a_priority)) {
 	va_list va;

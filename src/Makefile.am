@@ -35,13 +35,13 @@ lib_LTLIBRARIES = libguile-logging.la
 guilemoduledir = $(prefix)/share/guile/site/
 dist_guilemodule_DATA = logging.scm
 
-AM_CFLAGS  = $(GUILE_CFLAGS)
+AM_CFLAGS  = $(GUILE_CFLAGS) $(LOG4C_CFLAGS)
 # hello_world_test_c_LDADD   = $(GUILE_LIBS) libguile-logging.la
 # hello_world_test_c_LDFLAGS = $(GUILE_LDFLAGS)
 # hello_world_test_c_SOURCES = logging-test.c
 
-libguile_logging_la_LIBADD  = $(GUILE_LIBS)
+libguile_logging_la_LIBADD  = $(GUILE_LIBS) $(LOG4C_LIBS)
 libguile_logging_la_SOURCES = logging.c scm-logging.c
-include_HEADERS = logging.h 
+include_HEADERS = logging.h scm-logging.h
 
 MAINTAINERCLEANFILES = Makefile.in config.h.in 

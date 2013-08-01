@@ -1,4 +1,4 @@
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = guile-log4c.pc
+pkgconfig_DATA = guile-logging.pc
 
-MAINTAINERCLEANFILES = guile-log4c.pc Makefile.in
+MAINTAINERCLEANFILES = guile-logging.pc Makefile.in

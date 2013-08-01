@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([guile-log4c], [0.1.0], [shane.celis@gmail.com])
+AC_INIT([guile-logging], [0.1.0], [shane.celis@gmail.com])
 AC_CONFIG_AUX_DIR([support/build-aux])
 
 # We're going to use GNUMake and we're going to like it.
@@ -17,7 +17,11 @@ AX_CHECK_NOWEB
 AC_PATH_PROG([PERL], [perl])
 AC_SUBST([PERL])
 
-AM_PATH_LOG4C([1.2.0])
+AM_PATH_LOG4C([1.2.0], 
+              [AC_DEFINE([HAVE_LOG4C], [1], ["Log4C available."])
+               LOG4C_CFLAGS="-DHAVE_LOG4C=1 $LOG4C_CFLAGS"],
+              [AC_DEFINE([HAVE_LOG4C], [0], ["No Log4C available."])
+               AC_SUBST([LOG4C_CFLAGS], [])])
 
 AC_PATH_PROG([BASH], [bash])
 AC_SUBST([BASH])
@@ -50,7 +54,7 @@ AC_CONFIG_FILES([ Makefile
                   src/Makefile 
                   tests/Makefile
                   support/pkg-config/Makefile
-                  support/pkg-config/guile-log4c.pc
+                  support/pkg-config/guile-logging.pc
                   ], [])
 AC_CONFIG_FILES([ tests/works-without-noweb.sh ], [chmod +x tests/works-without-noweb.sh])
 AC_CONFIG_FILES([bin/env], [chmod a+x bin/env])
