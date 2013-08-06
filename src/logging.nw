@@ -122,7 +122,8 @@ It'd be better if we didn't encode any numbers that are defined in C
 headers here but I'm skipping that for expediency's sake.
 
 <<file:logging.scm>>=
-(define-module (logging))
+(define-module (logging)
+  #:export (mylog log4c-reread))
 
 (load-extension "libguile-logging" "init_logging")
 
@@ -138,7 +139,7 @@ headers here but I'm skipping that for expediency's sake.
 (define-public pri-notset 900)
 (define-public pri-unknown 1000)
 
-(define-public (mylog category-name priority message-format . args)
+(define (mylog category-name priority message-format . args)
   (mylog-primitive category-name priority (apply format #f message-format args)))
 @
 
